@@ -1,0 +1,44 @@
+<html>
+<head>
+</head>
+<body>
+<input type="file" multiple class="files">
+<input type="text" placeholder = "name of the property" class="name">
+<input type="text" placeholder="property type" class="propertyType">
+<button class="submit">submit</button>
+<script src="jquery.js"></script>
+<script type="text/javascript">
+const filescount = 5,
+ name = document.querySelector('.name'),
+ propertyType =document.querySelector('.propertyType');
+ formData = new FormData();
+
+$('.submit').click(function(){
+ console.log(filescount)
+var data = {
+"propertyName":name.value,
+"propertyType":propertyType.value
+}
+console.log(data)
+formData.append("data", JSON.stringify(data));
+for(var i = 0; i<filescount; i++){
+formData.append("files",document.querySelector('.files').files[i] );
+}
+
+
+$.ajax({
+url:"http://localhost:5070/posting",
+  type: "POST",
+        contentType: false,
+        cache: false,
+        processData: false,
+        data: formData,
+        success: function (data) {
+            console.log(data)
+        }
+})
+})
+
+</script>
+</body>
+</html>
