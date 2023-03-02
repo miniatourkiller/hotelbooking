@@ -1,0 +1,7 @@
+hot\hotel\utilities\Generator.class
+hot\hotel\utilities\EmailServices.class
+hot\hotel\utilities\SecurityEncryption.class
+hot\hotel\utilities\RoomServices.class
+hot\hotel\services\AllServices.class
+hot\hotel\utilities\SessionUtil.class
+hot\hotel\utilities\Time.class

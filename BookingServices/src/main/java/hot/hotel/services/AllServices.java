@@ -78,17 +78,26 @@ public String register(Host h, String url , String apikey) {
 	}
 }
 
+public String resendEmail(String email) {
+host = hDao.getByEmail(email);
+if(host!=null) {
+	es.verification(host);
+	return "done";
+}
+return "wrong email";
+}
+
 public String verify(String vkey, String email) {
 	host = hDao.vkey(email, vkey);
 	if(host == null) {
 		return "error";
 	}else if(host.isVerified()) {
 		
-		return "<p>You are already verified and can <a href='http://5070/login.html'>login<a/></p>";
+		return "<p>You are already verified and can <a href='http://localhost:5070/web/registration/index.html'>login<a/></p>";
 	}else {
 		host.setVerified(true);
 		hDao.save(host);
-		return "<p>You have been successfully verified and can <a href='http://5070/login.html'>login<a/></p>";
+		return "<p>You have been successfully verified and can <a href='http://localhost:5070/web/registration/index.html'>login<a/></p>";
 	}
 }
 
@@ -127,6 +136,15 @@ if(host != null) {
 }
 }
 
+public ProfilePic getPic(int id) {
+	pPic = pDao.getPic(id);
+	if(pPic == null) {
+		return null;
+	}else {
+		return pPic;
+	}
+}
+
 public String changePassword(ChangePassword cp) {
 	host = hDao.retrieval(cp.getEmail(), cp.getCode());
 	if(host == null) {
@@ -140,7 +158,7 @@ public String changePassword(ChangePassword cp) {
 }
 
 public String profilePic(MultipartFile file, HttpSession session) {
-	if(su.checkSession(session)) {
+	if(!su.checkSession(session)) {
 		return "expired";
 	}else {
 		host = hDao.getByEmail(su.getSessionArray(session)[1]);
@@ -165,12 +183,15 @@ public Host gethost(int id) {
 	return host;
 }
 
-public String postRoom(ArrayList<MultipartFile> files, Room r, HttpSession session) {
-	if(!su.checkSession(session)) {
+public String postRoom(MultipartFile[] files, Room r, HttpServletRequest req) {
+	if((String) req.getSession().getAttribute("details") == null) {
 		return "expired";
 	}else {
-		host = hDao.getByEmail(su.getSessionArray(session)[1]);
+		host = hDao.getByEmail(su.getSessionArray(req.getSession())[1]);
 		String imageNames = "";
+		if(files[0] == null) {
+			return "no files";
+		}
 		for(MultipartFile file : files) {
 			imageNames += file.getOriginalFilename()+":";
 			try {
@@ -210,12 +231,12 @@ public String upDateStatus() {
 	return "done";
 }
 
-public String changeStatus(ClientDetails c,HttpSession session, Integer roomid) {
-	if(su.checkSession(session)) {
+public String changeStatus(ClientDetails c,HttpSession session, int roomid) {
+	if((String) session.getAttribute("details") == null) {
 		return "expired";
 	}else {
 		host = hDao.getByEmail(su.getSessionArray(session)[1]);
-		room = roomDao.getById(roomid);
+		room = roomDao.getroom(roomid);
 		if(room.getStatus() == "available") {
 			room.setStatus("booked");
 			room.setFromDate(c.getDateFrom());
@@ -239,11 +260,11 @@ public String changeStatus(ClientDetails c,HttpSession session, Integer roomid) 
 }
 
 public ArrayList<Room> getHostRooms(HttpSession session){//this is for the host
-	if(!su.checkSession(session)) {
+	if((String) session.getAttribute("details") == null) {
 		return null;
 	}else {
 		ArrayList<Room> rooms = roomDao.getHostRooms(Integer.valueOf(su.getSessionArray(session)[0]) );
-		if(rooms != null) {
+		if(!rooms.isEmpty()) {
 			ArrayList<Room> rs = new ArrayList<>();
 
 		int counter  = rooms.size();
@@ -267,7 +288,7 @@ public ArrayList<Room> getHostRooms(HttpSession session){//this is for the host
 public ArrayList<Room> getHostRooms(int id){//this is for the viewers
 
 		ArrayList<Room> rooms = roomDao.getHostRooms(id);
-		if(rooms != null) {
+		if(!rooms.isEmpty()) {
 			ArrayList<Room> rs = new ArrayList<>();
 
 		int counter  = rooms.size();
@@ -290,11 +311,14 @@ public ArrayList<Room> getHostRooms(int id){//this is for the viewers
 		
 }
 
-public String removeRoom(HttpSession session, Integer id) {
-	if(su.checkSession(session)) {
+public String removeRoom(HttpSession session, int id) {
+	if(!su.checkSession(session)) {
 		return "expired";
 	}else {
-		room = roomDao.getById(id);
+		room = roomDao.getroom(id);
+		if(room == null) {
+			return "no room";
+		}
 		if(room.getStatus() == "booked") {
 			return "booked";
 		}
@@ -305,7 +329,7 @@ public String removeRoom(HttpSession session, Integer id) {
 Random random = new Random();
 public ArrayList<Room> rooms(){
 	ArrayList<Room> rooms = (ArrayList<Room>) roomDao.findAll();
-	if(rooms != null) {
+	if(!rooms.isEmpty()) {
 		ArrayList<Room> rs = new ArrayList<>();
 
 	int counter  = rooms.size();
@@ -328,7 +352,8 @@ public ArrayList<Room> rooms(){
 
 public ArrayList<Room> countyFiltered(String county) {
 	ArrayList<Room> rooms = roomDao.getByCounty(county);
-	if(rooms != null) {
+	
+	if(!rooms.isEmpty()) {
 		ArrayList<Room> rs = new ArrayList<>();
 
 	int counter  = rooms.size();
@@ -351,7 +376,7 @@ public ArrayList<Room> countyFiltered(String county) {
 
 public ArrayList<Room> countyPropertyTypefiltered(String county, String propertyType){
 	ArrayList<Room> rooms = roomDao.getByCountyPropertyType(county, propertyType);
-	if(rooms != null) {
+	if(!rooms.isEmpty()) {
 		ArrayList<Room> rs = new ArrayList<>();
 
 	int counter  = rooms.size();
@@ -372,15 +397,17 @@ public ArrayList<Room> countyPropertyTypefiltered(String county, String property
 	return null;
 }
 
-public String emailHost(Integer id, EmailContent e) {
+public String emailHost(int id, EmailContent e) {
 	host = hDao.getById(id);
 	e.setEmailTo(host.getEmail());
+	String message = "User with the email "+e.getEmailFrom()+" would like to know:"+e.getMessage()+".Please contact them back.";
+	e.setMessage(message);
 	es.sendSimpleMail(e);
 	return "done";
 }
 
-public Room getRoombyid(Integer id) {
-	room = roomDao.getById(id);
+public Room getRoombyid(int id) {
+	room = roomDao.getroom(id);
 	if(room == null) {
 		return null;
 	}
@@ -389,7 +416,7 @@ public Room getRoombyid(Integer id) {
 
 public String writeReviews(int id, Reviews r) {//the id of the house being reviewed
 	r.setTo(id);
-	room = roomDao.getById(id);
+	room = roomDao.getroom(id);
 	room.setReviews(room.getReviews()+1);
 	rDao.save(r);
 	return "done";
@@ -397,7 +424,7 @@ public String writeReviews(int id, Reviews r) {//the id of the house being revie
 
 public ArrayList<Reviews> getRevies(int id) {//the id of the house being reviewed
 	ArrayList<Reviews> reviews = rDao.getByTo(id);
-	if(reviews != null) {
+	if(!reviews.isEmpty()) {
 		ArrayList<Reviews> rs = new ArrayList<>();
 
 	int counter  = reviews.size();

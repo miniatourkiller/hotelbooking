@@ -64,7 +64,7 @@ public void verification(Host host) {
 public void sendSimpleMail(EmailContent ec) {
 	SimpleMailMessage smm = new SimpleMailMessage();
 	
-	smm.setFrom(ec.getEmailFrom());
+	smm.setFrom("jgathiru97@gmail.com");
 	smm.setTo(ec.getEmailTo());
 	smm.setSubject(ec.getSubject());
 	smm.setText(ec.getMessage());
