@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Registration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="hero">
+        <div class="form-box">
+            <div class="button-box">
+                <div id="btn"></div>
+                <button type="button" class="toggle-btn" onclick="login()">Log In</button>
+                <button type="button" class="toggle-btn" onclick="register()">Register</button>
+            </div>
+            <div class="social-icons">
+                <img src="../logo-red.png">
+                
+            </div>
+            <form id="login" class="input-group">
+                <input type="text" id="email" class="input-field" placeholder="Email" required>
+                <input type="password" id="password" class="input-field" placeholder="Enter Password" required>
+                <button type="submit" id="submit" class="submit-btn">Login</button>
+                <br>
+                <a href="">forgot password?</a><br>
+                <br>
+                <a href="" class="resend">Resend email</a>
+            </form>
+            <form id="register" class="input-group">
+                <input type="text" id="name" class="input-field" placeholder="User Name" >
+                <input type="email" id="remail" class="input-field" placeholder="Email Id" >
+                <input type="text" id="phonenumber" class="input-field" placeholder="Enter phone number" >
+                <input type="password" id="pass" class="input-field" placeholder="Password" >
+                <input type="text" id="rptpass" class="input-field" placeholder="Repeat password" >
+                <input type="checkbox" class="check-box"><span>I agree to the terms & conditions</span>
+                <button type="submit" id="registerbtn" class="submit-btn">Register</button>
+            </form>
+        </div>
+    </div>
+    <script src="../jquery.js"></script>
+    
+    <script>
+        var x = document.getElementById("login");
+        var y = document.getElementById("register");
+        var z = document.getElementById("btn");
+
+        function register(){
+            x.style.left = "-400px";
+            y.style.left = "50px";
+            z.style.left = "110px";
+        }
+        function login() {
+            x.style.left = "50px";
+            y.style.left = "450px";
+            z.style.left = "0px";
+        }
+        $('.resend').click(function(e){
+            e.preventDefault();
+            var email = prompt("your email","enter your email")
+            
+            var formData = new FormData();
+            formData.append("email", email);
+            $.ajax({
+                type:"POST",
+                url:"http://localhost:5070/resendemail",
+                processData: false,
+                contentType: false,
+                data: formData,
+                success: function(data){
+                    console.log(data)
+                }
+            })
+        })
+        $('#submit').click(function(e){
+            e.preventDefault()
+            var mydata = {
+                "email":$('#email').val(),
+                "password": $('#password').val()
+            }
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:5070/login",
+                contentType:"APPLICATION/JSON",
+                data: JSON.stringify(mydata),
+                dataType:"text",
+                success: function(data){
+                    if(!data){
+                       alert("You have to register first to be able to login!")
+                    }
+                    if(data == "success"){
+                        window.location.href="../index.html"
+                    }else if(data =="invalid details"){
+                        alert("Wrong password")
+                    }else if(data == "not verified"){
+                        alert("You have not been verified.Check your email.")
+                    }
+                }
+            })
+        })
+      $('#registerbtn').click(function(e){
+        e.preventDefault()
+        var mydata = {
+              "hostName": $('#name').val(),
+              "email": $('#remail').val(),
+              "phoneNumber": $('#phonenumber').val(),
+              "password": $('#pass').val()
+          }
+          $.ajax({
+              type: "POST",
+              url: "http://localhost:5070/register",
+              contentType:"APPLICATION/JSON",
+              data: JSON.stringify(mydata),
+              success: function(data){
+                if(data == "exists"){
+                alert("The account already exists")
+                }else if(data == "false email"){
+                alert("email is false")
+                }else if(data == "done"){
+                alert("success. Wait for a verification email")
+                window.location.reload()
+                }
+              }
+          })
+      })
+    </script>
+</body>
+</html>

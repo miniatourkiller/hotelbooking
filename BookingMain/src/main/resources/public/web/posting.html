@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add A house</title>
+    <link rel="stylesheet" href="style.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+            integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+<style>
+    .amenitieslist{
+        border: solid 1px rgb(62, 61, 61)
+    }
+</style>
+</head>
+<body>
+    <nav id="navBar" class="navbar-white">
+        <a href="index.html">
+            <img src="logo-red.png" class="logo">
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="nofilter.html">All Rooms</a></li>
+        </ul>
+        <a href="#" class="register-btn">Start Earning Now</a>
+        <i class="fas fa-bars" onclick="togglebtn()"></i>
+    </nav>
+<div class="container">
+    <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">Property Name</label>
+        <input type="text" class="form-control" id="propertyname" placeholder="Name of the property">
+    </div>
+    <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">Property Type</label>
+    <select class="filter" name="" id="propertytype">
+        <option value="0">Select</option>
+        <option value="villa">Villa</option>
+        <option value="confrence room">Confrence Room</option>
+        <option value="hostel">Hostel</option>
+        <option value="guest suite">Guest Suite</option>
+        <option value="house">House</option>
+        <option value="flat">Flat</option>
+        <option value="hotel">Hotel</option>
+    </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">County</label>
+        <input type="text" class="form-control" id="county" placeholder="County">
+    </div>
+    <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">Area</label>
+        <input type="text" class="form-control" id="area" placeholder="Local area name">
+    </div>
+    <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">Bathrooms</label>
+        <input type="number" class="form-control" id="bathrooms" placeholder="Number of Bathrooms">
+    </div>
+    <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">Bedrooms</label>
+        <input type="number" class="form-control" id="bedrooms" placeholder="Number of Bedrooms">
+    </div>
+    <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">Guests</label>
+        <input type="number" class="form-control" id="guests" placeholder="Number of Guests">
+    </div>
+    <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">Price</label>
+        <input type="number" class="form-control" id="price" placeholder="Price(per night)">
+    </div>
+    <label for="amenities" style="font-size:larger; font-weight: bold">Amenities Available</label><span>(check for the ones the room has)</span>
+  <div class="amenitieslist">
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="KITCHEN" id="amenities" checked>
+        <label class="form-check-label" for="flexCheckDefault">
+            Kitchen
+        </label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="WIFI" id="amenities">
+        <label class="form-check-label" for="flexCheckChecked">
+            WIFI
+        </label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="POOL" id="amenities">
+        <label class="form-check-label" for="flexCheckChecked">
+            Pool
+        </label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="GYM" id="amenities">
+        <label class="form-check-label" for="flexCheckChecked">
+            Gym
+        </label>
+    </div>
+  </div>
+    <div class="mb-3">
+        <label for="exampleFormControlTextarea1" class="form-label">Description</label>
+        <textarea class="form-control" id="description" placeholder="enter the room description here(optional)" rows="3"></textarea>
+    </div> 
+       <div class="mb-3">
+        <label for="exampleFormControlTextarea1" class="form-label">Images</label>
+        <input type="file" class="form-control" id="images" multiple>
+    </div> 
+    <button class="done">Done</button>
+    
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+            crossorigin="anonymous"></script>
+<script src="./jquery.js"></script>
+    <script>
+        var formdata = new FormData();
+document.querySelector('.done').addEventListener('click', function(){
+    var checkedlist = document.querySelectorAll('#amenities:checked');
+    var amenities = ""
+    checkedlist.forEach( function(item, index){
+        amenities+=checkedlist[index].value+"/";
+    })
+    var propertytype = $('#propertytype').val(),
+    propertyname = $('#propertyname').val(),
+    county = $('#county').val(),
+    area = $('#area').val(),
+    bedrooms = $('#bedrooms').val(),
+    bathrooms = $('#bathrooms').val(),
+    guests = $('#guests').val(),
+    price = $('#price').val(),
+    description = $('#description').val();
+   const images = document.querySelector('#images').files;
+
+
+for(var i = 0; i< images.length; i++){
+     formdata.append("files", images[i])
+}
+
+    var ourdata = {
+        "propertyType": propertytype,
+        "propertyName": propertyname,
+        "price": Number(price),
+        "guests": Number(guests),
+        "county":county,
+        "area": area,
+        "description": description,
+        "amenities":amenities,
+        "bedroom": Number(bedrooms),
+        "bathroom": Number(bathrooms)
+    }
+    console.log(document.cookie)
+    
+     formdata.append("data", JSON.stringify(ourdata))
+console.log(JSON.stringify(ourdata))
+     $.ajax({
+        url: "http://localhost:5070/posting",
+        type:"POST",
+        data: formdata,
+        contentType: false,
+        processData: false,
+        success: function(data){
+            console.log(data)
+        }
+     })
+})
+
+    </script>
+</body>
+</html>

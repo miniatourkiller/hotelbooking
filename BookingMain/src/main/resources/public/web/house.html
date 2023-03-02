@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Details Page</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/all.css">
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="contact-popup">
+        <div class="head-popup">
+            <label for="hostemail">HostEmail</label><br>
+            <input type="text" class="hostemail"><br>
+            <label for="clientemail">Your Email</label><br>
+            <input type="text" placeholder="Enter your email" class="clientemail"><br>
+            <label for="subject">Subject</label><br>
+            <input type="text" placeholder="Enter the subject" class="subject"><br>
+            <label for="message">Message</label><br>
+            <textarea placeholder="Your message here" name="" id="message" cols="30" rows="10"></textarea><br>
+            <button class="cancle">Cancel</button><button class="submit-contact">Send</button>
+        </div>
+        <div class="popup-buttons">
+    
+        </div>
+    </div>
+    <nav id="navBar" class="navbar-white">
+        <a href="index.html">
+            <img src="logo-red.png" class="logo">
+        </a>
+        <ul class="nav-links">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="nofilter.html">All Rooms</a></li>
+        </ul>
+        <a href="#" class="register-btn">Start Earning Now</a>
+        <i class="fas fa-bars" onclick="togglebtn()"></i>
+    </nav>
+   <div class="holder">
+    
+   </div>
+    <ul class="details-list">
+        <li><i class="fas fa-home"></i>Entire Home
+            <span>You will have the entire flat for you.</span>
+        </li>
+        <li><i class="fas fa-paint-brush"></i>Enhanced Clean
+            <span>This host has committted to staybnb's cleaning process.</span>
+        </li>
+        <li><i class="fas fa-map-marker-alt"></i>Great Location
+            <span>90% of recent guests gave the location a 5 star rating.</span>
+        </li>
+        <li><i class="fas fa-heart"></i>Great Check-in Experience
+            <span>100% of recent gusts gave the check-in process a 5 star.</span>
+        </li>
+    </ul>
+    <hr class="line">
+    <h3>Description:</h3><br>
+    <p class="home-desc">The room is in touch with nature</p>
+    <hr class="line">
+     <hr class="line">
+   <div class="reviews">
+   <h6>Reviews</h6><br>
+   
+   </div>
+    <hr class="line">
+    <hr class="line">
+    <div class="host">
+       
+    </div>
+    <a class="contact-host" onclick="pop()">Contact Host</a>
+	    <a href="#" class="leave-review">Leave a review</a>
+    <div class="container">
+        <div class="footer">
+            <a href="https://facebook.com/"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://youtube.com/"><i class="fab fa-youtube"></i></a>
+            <a href="https://instagram.com/"><i class="fab fa-instagram"></i></a>
+            <a href="https://twitter.com/"><i class="fab fa-twitter"></i></a>
+            <a href="https://linkedin.com/"><i class="fab fa-linkedin-in"></i></a>
+            <hr>
+            <p>Copyright @ 2022, Rennison Kangethe</p>
+        </div>
+    </div>
+    <script src="jquery.js"></script>
+    <script src="knockout-3.5.1.js"></script>
+    <script src="./header.js"></script>
+    <script>
+    $('.contact-host').click(function(e){
+    e.preventDefault()
+    })
+        var navBar = document.getElementById("navBar");
+        function togglebtn() {
+            navBar.classList.toggle("hidemenu")
+        }
+        $.ajax({
+            type:"GET",
+            url:`http://localhost:5070/getthisroom/${new URLSearchParams(window.location.search).get('roomid')}`,
+            contentType:"json",
+            success: function(data){
+                if(!data){
+                    console.log("no data found")
+                }else{
+                    console.log(data)
+var img = data.images.split(':')
+                    console.log(img.length)      
+var data1 = data;
+var htm =` <div class="house-details">
+        <div class="house-title">
+            <h1>${data.propertyName}</h1>
+            <div class="row">
+                <div>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                    <i class="far fa-star"></i>
+                    <div class="house-price">
+                    <span>${data.reviews} Reviews</span>
+                </div>
+                <div>
+                    <p>Location: ${data.county}, ${data.area}, Kenya</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="gallery">
+        <div class="gallery-img-1"><img src="../hotelimages/${img[0]}"></div>
+    </div>
+    `
+
+   
+$('.home-desc').text(data.description)
+$('.holder').append(htm)
+var sec;
+
+                      $.ajax({
+                        type: "POST",
+                        url: `http://localhost:5070/getReviews/${data.id}`,
+                        contentType: "json",
+                        success: function (data) {
+                            
+                           if(!data){
+                            console.log("no reviews yet")
+                            var rev =`<p>no reviews yet</P>`
+                            $('.reviews').append(rev)
+                           }else{
+                            console.log(data)
+                             var rev = `<span class="reviewer">anonymous</span><p>The room is great, the host is amazing</P><br><br>
+    <span class="reviewer">anonymous</span><p>The room is great, the host is amazing and you should rate him</P><br><br>`
+                               $('.reviews').append(rev)
+                           }
+                        }
+                    })
+
+                         $.ajax({
+                        type: "GET",
+                        url: `http://localhost:5070/gethost/${data.hostId}`,
+                        contentType: "json",
+                        success: function (data) {
+                            if (!data) {
+                                console.log("no data found")
+                            } else {
+                                
+                                data2 = data;
+
+                              
+                               
+                                sec = `<div class="small-details">
+                        <h2>Entire rental unit hosted by ${data.hostName}</h2>
+                            <p>${data1.guests} guest &nbsp; &nbsp; ${data1.bedroom} beds &nbsp; &nbsp; ${data1.bathroom} bathroom</p>
+                     <h4>ksh ${data1.price} / day</h4>
+                            </div>
+                    <hr class="line">
+                    <div class="check-form">
+                    <button class="available" style="background-color: rgb(214, 46, 46);"><p class="status"></p></button>
+                 <button type="submit" onclick="pop()" class="contact-now">Book now</button>
+                 </div>`
+$('.hostemail').val(data.email)
+   
+                        
+
+
+
+                      $.ajax({
+                        type: "GET",
+                        url: `http://localhost:5070/getpic/${data.id}`,
+                        contentType: "json",
+                        success:function(data){
+                            if(data){
+                                   $('.holder').append(sec);
+                                var hos = ` <img style="height: 200px; width: 200px" src="../hostimages/${data.imageName}">
+        <div class="hostlinkdirect">
+            <h2>Hosted by ${data2.hostName}</h2>
+            <input type="number" value="${data2.id}" hidden class="hostid" >
+            <a href="" class="hostlink"></a>
+            <p><span>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+            </span>&nbsp; &nbsp;</p>
+        </div>`
+        $('.status').text(data1.status)
+           
+                                $('.cancle').click(function () {
+                                    $('.contact-popup').css({
+                                        "display": "none"
+                                    })
+                                })
+
+$('.submit-contact').click(function(){
+      var hostemail = $('.hostemail').val()
+    var clientemail = $('.clientemail').val()
+    var subject = $('.subject').val()
+    var message = $('#message').val()
+    var mydata = {
+        "emailTo": hostemail,
+        "emailFrom": clientemail,
+        "subject": subject,
+        "message": message
+    }
+    console.log(JSON.stringify(mydata))
+    $.ajax({
+        type:"POST",
+        url:"http://localhost:5070/emailhost/"+$('.hostid').val(),
+        data: JSON.stringify(mydata),
+        contentType:"APPLICATION/JSON",
+        success: function(data){
+            console.log(data)
+        }
+    })
+})
+
+        if (data.id == Number(document.cookie)) {
+        
+                                    console.log("your room")
+                                    $('.check-form').append('<button class="change-status" style="background-color: rgb(214, 46, 46);">Change status</button>')
+                                    $('.check-form').append('<button class="delete" style="background-color: red;">Delete Room</button>')
+                                }
+                                for (var i = 1; i < img.length-1; i++) {
+                                    var pic = `<div><img src="../hotelimages/${img[i]}"></div>`
+                                 
+                                    $('.gallery').append(pic)
+                                }
+                                $('.host').append(hos);
+                                        var hostlink = document.querySelector('.hostlink');
+                                $('.host').click(function () {
+                                    hostlink.href = "hosthouses.html?hostid=" + $('.hostid').val()
+                                    hostlink.click()
+                                })
+                            }
+                        }
+                    })
+
+
+ 
+                            }
+                        }
+                    })
+                }
+            }
+        })
+        function pop() {
+                                    $('.contact-popup').css({
+                                        "display": "block"
+                                    })
+                                }
+    </script>
+</body>
+</html>

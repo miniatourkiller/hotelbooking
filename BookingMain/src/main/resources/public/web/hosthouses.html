@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host Houses</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/all.css">
+</head>
+
+<body>
+    <nav id="navBar" class="navbar-white">
+        <a href="index.html">
+            <img src="logo-red.png" class="logo">
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="nofilter.html">All Rooms</a></li>
+        </ul>
+        <a href="#" class="register-btn">Start Earning Now</a>
+        <i class="fas fa-bars" onclick="togglebtn()"></i>
+    </nav>
+    <div class="host hostroom">
+       
+    </div>
+    
+    <div class="container">
+        <div class="list-container">
+            <div class="left-col">
+                <p>200+ Options</p>
+                <h1>Recommended Posted by the Host</h1>
+          <div class="holder">
+
+          </div>
+        <div class="pagination">
+            <img src="arrow.png" class="left-arrow">
+            <span class="page current">1</span>
+            <span class="page">2</span>
+            <span class="page">3</span>
+            <span class="page">4</span>
+            <span class="page">5</span>
+            <span class="page">6</span>
+            <img src="arrow.png" class="right-arrow">
+        </div>
+        <div class="footer">
+            <a href="https://facebook.com/"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://youtube.com/"><i class="fab fa-youtube"></i></a>
+            <a href="https://instagram.com/"><i class="fab fa-instagram"></i></a>
+            <a href="https://twitter.com/"><i class="fab fa-twitter"></i></a>
+            <a href="https://linkedin.com/"><i class="fab fa-linkedin-in"></i></a>
+            <hr>
+            <p>Copyright @ 2022, Rennison Kangethe</p>
+        </div>
+
+    </div>
+    <a href="" class="houselink"></a>
+    <script src="jquery.js"></script>
+    <script src="./header.js"></script>
+
+    <script>
+        var navBar = document.getElementById("navBar");
+        function togglebtn() {
+            navBar.classList.toggle("hidemenu")
+        }
+
+        var pagination = $('.page');
+        pagination.click(function () {
+            alert($(this).index())
+        })
+            var houselink = document.querySelector('.houselink');
+
+                $.ajax({
+                        type: "GET",
+                        url: `http://localhost:5070/getpic/${new URLSearchParams(window.location.search).get('hostid')}`,
+                        contentType: "json",
+                        success: function (data) {
+                            if(data){
+                                console.log(data)
+                                var data1 = data
+                                 $.ajax({
+                                    type: "GET",
+                                    url: `http://localhost:5070/gethost/${new URLSearchParams(window.location.search).get('hostid')}`,
+                                    contentType: "json",
+                                    success: function (data) {
+                                        if (data) {
+                                            console.log(data)
+                                            hos = ` <img style="height: 120px; width: 120px" src="../hostimages/${data1.imageName}">
+        <div>
+            <h2>Hosted by ${data.hostName}</h2>
+            <p><span>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </span>&nbsp; &nbsp;${data.phoneNumber} &nbsp; &nbsp;</p>
+        </div>
+        <a href="#" class="contact-host">Contact Host</a>`
+        $('.host').append(hos)
+                                        }
+                                    }
+                                })
+                            }
+                        }})
+                  $.ajax({
+                        type: "GET",
+                        url: "http://localhost:5070/showhostrooms/"+new URLSearchParams(window.location.search).get('hostid'),
+                        contentType: "json",
+                        success: function (data) {
+                            console.log(data)
+                            var size = data.length
+                            for (var i = 0; i < size; i++) {
+                                var img = data[i].images.split(":")[0]
+                                var htm = `  <div class="house">
+                    <div class="house-img">
+                        <img src="../hotelimages/${img}">
+                    </div>
+                    <div class="house-info">
+                        <p>Private ${data[i].propertyType} in ${data[i].county}, ${data[i].area}</p>
+                        <h3>${data[i].propertyName}</h3>
+                        <p>${data[i].bedroom} Bedroom / ${data[i].bathroom} Bathroom / ${data[i].amenities}</p>
+                        <input type="number" value="${data[i].id}" hidden class="roomid">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <i class="far fa-star"></i>
+                        <div class="house-price">
+                            <p>${data[i].guests} Guest</p>
+                            <h4>ksh${data[i].price} <span>/ day</span></h4>
+                        </div>
+                    </div>
+                </div>`
+                                $('.holder').append(htm)
+                            }
+
+                            $('.house').click(function () {
+                                id = $('.roomid').eq($(this).index()).val()
+                                houselink.href = "house.html?roomid=" + id
+                                houselink.click()
+                            })
+                        }
+                    })
+    </script>
+</body>
+
+</html>
