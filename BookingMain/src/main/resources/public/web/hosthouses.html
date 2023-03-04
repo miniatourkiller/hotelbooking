@@ -34,7 +34,7 @@
           <div class="holder">
 
           </div>
-        <div class="pagination">
+        <!-- <div class="pagination">
             <img src="arrow.png" class="left-arrow">
             <span class="page current">1</span>
             <span class="page">2</span>
@@ -43,7 +43,7 @@
             <span class="page">5</span>
             <span class="page">6</span>
             <img src="arrow.png" class="right-arrow">
-        </div>
+        </div> -->
         <div class="footer">
             <a href="https://facebook.com/"><i class="fab fa-facebook-f"></i></a>
             <a href="https://youtube.com/"><i class="fab fa-youtube"></i></a>
@@ -60,6 +60,7 @@
     <script src="./header.js"></script>
 
     <script>
+        var hosimg = ""
         var navBar = document.getElementById("navBar");
         function togglebtn() {
             navBar.classList.toggle("hidemenu")
@@ -76,7 +77,7 @@
                         url: `http://localhost:5070/getpic/${new URLSearchParams(window.location.search).get('hostid')}`,
                         contentType: "json",
                         success: function (data) {
-                            if(data){
+                            if(data||!data){
                                 console.log(data)
                                 var data1 = data
                                  $.ajax({
@@ -84,9 +85,10 @@
                                     url: `http://localhost:5070/gethost/${new URLSearchParams(window.location.search).get('hostid')}`,
                                     contentType: "json",
                                     success: function (data) {
-                                        if (data) {
+                                        if (data||!data) {
                                             console.log(data)
-                                            hos = ` <img style="height: 120px; width: 120px" src="../hostimages/${data1.imageName}">
+                                            hosimg = data1.imageName;
+                                            hos = ` <img class="hostimg" style="height: 120px; width: 120px" src="../hostimages/${data1.imageName}">
         <div>
             <h2>Hosted by ${data.hostName}</h2>
             <p><span>
@@ -98,6 +100,9 @@
         </div>
         <a href="#" class="contact-host">Contact Host</a>`
         $('.host').append(hos)
+         if (!hosimg) {
+                                                document.querySelector('.hostimg').src = "avatar1.png"
+                                            }
                                         }
                                     }
                                 })

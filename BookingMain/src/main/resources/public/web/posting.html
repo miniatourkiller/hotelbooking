@@ -157,7 +157,10 @@ console.log(JSON.stringify(ourdata))
         contentType: false,
         processData: false,
         success: function(data){
-            console.log(data)
+            if(data == "done"){
+                alert("successfully posted a room")
+                window.location.reload()
+            }
         }
      })
 })

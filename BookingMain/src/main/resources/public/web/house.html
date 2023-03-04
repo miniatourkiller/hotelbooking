@@ -85,6 +85,7 @@
     <script src="knockout-3.5.1.js"></script>
     <script src="./header.js"></script>
     <script>
+        var hosimg = ""
     $('.contact-host').click(function(e){
     e.preventDefault()
     })
@@ -92,6 +93,7 @@
         function togglebtn() {
             navBar.classList.toggle("hidemenu")
         }
+        console.log(document.cookie)
         $.ajax({
             type:"GET",
             url:`http://localhost:5070/getthisroom/${new URLSearchParams(window.location.search).get('roomid')}`,
@@ -157,9 +159,7 @@ var sec;
                         url: `http://localhost:5070/gethost/${data.hostId}`,
                         contentType: "json",
                         success: function (data) {
-                            if (!data) {
-                                console.log("no data found")
-                            } else {
+                            if (data || !data)  {
                                 
                                 data2 = data;
 
@@ -186,9 +186,10 @@ $('.hostemail').val(data.email)
                         url: `http://localhost:5070/getpic/${data.id}`,
                         contentType: "json",
                         success:function(data){
-                            if(data){
+                            if(data||!data){
+                                hosimg = data.imageName;
                                    $('.holder').append(sec);
-                                var hos = ` <img style="height: 200px; width: 200px" src="../hostimages/${data.imageName}">
+                                var hos = ` <img class="hostimg" style="height: 200px; width: 200px" src="../hostimages/${data.imageName}">
         <div class="hostlinkdirect">
             <h2>Hosted by ${data2.hostName}</h2>
             <input type="number" value="${data2.id}" hidden class="hostid" >
@@ -202,11 +203,7 @@ $('.hostemail').val(data.email)
         </div>`
         $('.status').text(data1.status)
            
-                                $('.cancle').click(function () {
-                                    $('.contact-popup').css({
-                                        "display": "none"
-                                    })
-                                })
+                              
 
 $('.submit-contact').click(function(){
       var hostemail = $('.hostemail').val()
@@ -231,7 +228,7 @@ $('.submit-contact').click(function(){
     })
 })
 
-        if (data.id == Number(document.cookie)) {
+        if (Number(data2.id) == Number(document.cookie.split(":")[1])) {
         
                                     console.log("your room")
                                     $('.check-form').append('<button class="change-status" style="background-color: rgb(214, 46, 46);">Change status</button>')
@@ -243,6 +240,9 @@ $('.submit-contact').click(function(){
                                     $('.gallery').append(pic)
                                 }
                                 $('.host').append(hos);
+                                if (!hosimg) {
+                                    document.querySelector('.hostimg').src = "avatar1.png"
+                                }
                                         var hostlink = document.querySelector('.hostlink');
                                 $('.host').click(function () {
                                     hostlink.href = "hosthouses.html?hostid=" + $('.hostid').val()
@@ -265,6 +265,12 @@ $('.submit-contact').click(function(){
                                         "display": "block"
                                     })
                                 }
+                                  $('.cancle').click(function () {
+                                    $('.contact-popup').css({
+                                        "display": "none"
+                                    })
+                                })
+                                
     </script>
 </body>
 </html>
