@@ -119,6 +119,13 @@ public String login(Login login, HttpServletRequest req) {
 	}
 }
 
+public String logout(HttpSession session) {
+	if(su.destroySession(session) == "done") {
+		return "done";
+	}
+	return "fail";
+}
+
 @Autowired
 EmailContent ec;
 public String retreivalCode(ChangePassword cp) {
@@ -171,6 +178,7 @@ public String profilePic(MultipartFile file, HttpSession session) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		ProfilePic pPic = new ProfilePic();
 		pPic.setImageName(file.getOriginalFilename());
 		pPic.setOwnerId(host.getId());
 		pDao.save(pPic);
